@@ -28,6 +28,7 @@
 
 ### 2. 🔍 智能搜索与聚合
 - **实时流式搜索 (SSE)**：采用 Server-Sent Events 技术，搜索结果**边搜边显**，即时反馈，无需等待所有源响应。
+- **智能关键词匹配**：自动生成搜索变体（去除副标题、季数后缀等），同时搜索中英文名，大幅提高命中率。例如搜索"利刃出鞘3：亡者归来"会同时尝试"利刃出鞘3"和"Knives Out 3"。
 - **自动分组与实时合并**：同一影片的不同线路自动聚合，新搜索到的源实时合并到已有卡片，右上角源数量实时跳动。
 - **SQLite 永久缓存**：内置高性能 SQLite 数据库缓存，支持无限存储，读写速度极快，热搜词秒级响应。
 
@@ -765,27 +766,6 @@ docker run -d -p 3000:3000 \
 **解决方案**：
 
 本项目已内置 HTTP 支持配置。如果您使用 GitHub Actions 自动构建或本地构建，APK 会自动支持 HTTP 访问。
-
-**技术细节** (已在项目中配置，无需手动操作)：
-
-1. `android/app/src/main/AndroidManifest.xml` 已添加：
-   ```xml
-   <application
-       android:usesCleartextTraffic="true"
-       android:networkSecurityConfig="@xml/network_security_config"
-       ...>
-   ```
-
-2. `android/app/src/main/res/xml/network_security_config.xml` 已配置：
-   ```xml
-   <network-security-config>
-       <base-config cleartextTrafficPermitted="true">
-           <trust-anchors>
-               <certificates src="system" />
-           </trust-anchors>
-       </base-config>
-   </network-security-config>
-   ```
 
 **使用 GitHub Actions 构建内网 APK**：
 

@@ -2520,7 +2520,8 @@
                             <h1 class="hero-title">{{ item.title }}</h1>
                             <p class="hero-desc">{{ item.overview }}</p>
                             <div class="hero-btns" style="display: flex; gap: 15px; flex-wrap: wrap;">
-                                <button class="btn-play" @click="autoSearch(item.title)"><i class="fas fa-play"></i>
+                                <button class="btn-play" @click="autoSearch(item.title, item.originalTitle)"><i
+                                        class="fas fa-play"></i>
                                     播放</button>
                                 <button class="btn-info" @click="showMovieInfo(item.rawData)"><i
                                         class="fas fa-info-circle"></i> 更多信息</button>
@@ -2651,7 +2652,7 @@
                                 class="fas fa-chevron-left"></i></button>
                         <div class="hot-row" :ref="key" @scroll="onRowScroll(key)">
                             <div class="hot-card" v-for="item in rowLists[key]" :key="item.id"
-                                @click="autoSearch(item.title || item.name)">
+                                @click="autoSearch(item.title || item.name, item.original_title || item.original_name)">
                                 <div class="poster-wrap">
                                     <img :src="getPosterUrl(item.poster_path)" loading="lazy"
                                         @load="$event.target.classList.add('loaded'); $event.target.parentElement.classList.add('img-loaded')">
@@ -2671,7 +2672,7 @@
                     <!-- 展开状态：分页网格布局 -->
                     <div class="grid-expanded" v-show="expandedRows[key]">
                         <div class="hot-card" v-for="item in getPagedItems(key)" :key="'grid-' + item.id"
-                            @click="autoSearch(item.title || item.name)">
+                            @click="autoSearch(item.title || item.name, item.original_title || item.original_name)">
                             <div class="poster-wrap">
                                 <img :src="getPosterUrl(item.poster_path)"
                                     @load="$event.target.classList.add('loaded'); $event.target.parentElement.classList.add('img-loaded')">
@@ -2791,7 +2792,7 @@
                         <p class="info-overview">{{ infoModalData?.overview || '暂无简介' }}</p>
                         <div class="info-modal-btns">
                             <button class="btn-play"
-                                @click="showInfoModal = false; autoSearch(infoModalData?.title || infoModalData?.name)">
+                                @click="showInfoModal = false; autoSearch(infoModalData?.title || infoModalData?.name, infoModalData?.original_title || infoModalData?.original_name)">
                                 <i class="fas fa-play"></i> 立即播放
                             </button>
                         </div>
@@ -4465,6 +4466,7 @@
                             if (data.results) {
                                 this.heroList = data.results.filter(i => i.backdrop_path).slice(0, 5).map(item => ({
                                     title: item.title || item.name,
+                                    originalTitle: item.original_title || item.original_name || '',  // 原始标题（通常是英文）
                                     overview: item.overview || '精彩内容不容错过',
                                     backdrop: `${TMDB_BACKDROP_URL}${item.backdrop_path}`,
                                     rawData: item
@@ -4499,11 +4501,12 @@
                         }).catch(() => { });
                 },
 
-                autoSearch(name) {
+                autoSearch(name, originalTitle = '') {
                     this.keyword = name;
+                    this._originalTitle = originalTitle;  // 保存原始标题用于搜索
                     this.doSearch();
                 },
-                clearSearch() { this.searched = false; this.keyword = ''; this.rawList = []; },
+                clearSearch() { this.searched = false; this.keyword = ''; this.rawList = []; this._originalTitle = ''; },
                 doSearch() {
                     if (!this.keyword) return;
 
@@ -4517,7 +4520,11 @@
                     this.rawList = [];
                     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-                    const url = `/api/search?wd=${encodeURIComponent(this.keyword)}&stream=true`;
+                    // 构建搜索 URL，包含原始标题用于智能搜索
+                    let url = `/api/search?wd=${encodeURIComponent(this.keyword)}&stream=true`;
+                    if (this._originalTitle && this._originalTitle !== this.keyword) {
+                        url += `&original=${encodeURIComponent(this._originalTitle)}`;
+                    }
                     this._evtSource = new EventSource(url);
 
                     this._evtSource.onmessage = (e) => {
