@@ -26,6 +26,7 @@ https://ednovas-test.vercel.app （不包含任何数据）
 - [📦 安装与运行 (Installation)](#-安装与运行-installation)
 - [🚀 部署 (Deployment)](#-部署-deployment)
 - [🤖 Android APP 构建](#-android-app-构建-github-actions)
+- [⚠️ App 问题与替代方案](#️-app-使用问题与替代方案)
 - [💾 数据维护与备份](#-数据维护与备份)
 - [⚠️ 免责声明 (Disclaimer)](#️-免责声明-disclaimer)
 
@@ -737,7 +738,16 @@ docker run -d -p 3000:3000 \
 
 如果您 Fork 了本项目并希望永久修改默认配置：
 
-1.  编辑 `capacitor.config.json`，修改 `server.url` 为您的服务器地址：
+##### 📱 配置文件位置
+
+| 版本 | 配置文件路径 | App ID |
+|-----|-------------|--------|
+| **手机版** | `capacitor.config.json` | `com.ednovas.donguatv` |
+| **电视版** | `android-tv/capacitor.config.json` | `com.ednovas.donguatv.tv` |
+
+两个版本的配置格式相同，只需修改 `server.url` 即可更改内置网站地址：
+
+1.  编辑对应的 `capacitor.config.json`，修改 `server.url` 为您的服务器地址：
     ```json
     {
       "appId": "com.ednovas.donguatv",
@@ -766,32 +776,42 @@ docker run -d -p 3000:3000 \
     ```
     APK 位于 `android/app/build/outputs/apk/release/`
 
-#### 🏠 内网 HTTP 使用说明
+#### ⚠️ App 使用问题与替代方案
 
-> **⚠️ 重要**：从 Android 9 (API 28) 开始，Android 默认禁止明文 HTTP 流量 (Cleartext Traffic)。如果您的 APK 无法连接 HTTP 服务器，请确认以下配置。
+如果您在使用 Android App 时遇到以下问题：
 
-**问题现象**：
-- APK 在 Android TV / 手机上一直显示 loading
-- 浏览器可以正常访问 `http://192.168.x.x:3000`，但 APP 不行
-- 控制台报错 `net::ERR_CLEARTEXT_NOT_PERMITTED`
+| 问题类型 | 具体表现 |
+|---------|---------|
+| **安装问题** | "应用不兼容"、"解析包错误"、无法安装 |
+| **运行问题** | 闪退、白屏、卡顿、无法加载 |
+| **播放问题** | 视频无法播放、黑屏、没有声音 |
+| **界面问题** | 显示异常、遥控器无法操作 |
 
-**解决方案**：
+**👉 强烈建议使用以下替代方案：**
 
-本项目已内置 HTTP 支持配置。如果您使用 GitHub Actions 自动构建或本地构建，APK 会自动支持 HTTP 访问。
+1. **🌐 网页版（推荐）**
+   - 直接在设备浏览器中访问您部署的网站地址
+   - 兼容性最好，无需安装，随时更新
+   - 电视浏览器推荐：当贝浏览器、ES浏览器
 
-**使用 GitHub Actions 构建内网 APK**：
+2. **📺 投屏播放（推荐）**
+   - 在手机/电脑浏览器打开网页版
+   - 点击播放页面的「一键投屏」按钮
+   - 将视频投送到电视/投影仪播放
+   - 支持 DLNA/AirPlay 协议
 
-1. 进入 **Actions** → **Android Build & Release** → **Run workflow**
-2. 填写您的内网服务器地址：`http://192.168.1.100:3000`
-3. 构建完成后下载 APK，即可正常访问 HTTP 服务
+3. **📱 PWA 模式**
+   - 在浏览器中访问网站
+   - 点击「添加到主屏幕」
+   - 获得类似 App 的使用体验
 
-**📝 注意事项**：
-- `capacitor.config.json` 中的 `"cleartext": true` 是 Capacitor 配置，但 Android 9+ 还需要上述 Android 原生配置
-- 如果您手动构建 APK，请确保项目代码是最新版本（包含上述配置）
-- 建议使用固定 IP 地址而非主机名，避免 DNS 解析问题
+> 💡 **为什么推荐网页版？**
+> - App 受限于 Android 系统版本、WebView 内核版本、设备兼容性等因素
+> - 网页版始终使用最新代码，无需手动更新
+> - 投屏功能让您可以在大屏幕上观看，同时用手机控制
+
 
 ---
-
 
 
 ## 💾 数据维护与备份
