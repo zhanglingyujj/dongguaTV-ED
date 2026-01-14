@@ -6360,6 +6360,17 @@
                             console.log('[进度记忆-切换] canplay 事件触发!');
                             console.log('[进度记忆-切换] progressRestored:', progressRestored);
 
+                            // 💾 恢复倍速设置 (每次切换视频都检查)
+                            try {
+                                const savedSpeed = parseFloat(localStorage.getItem('dplayer_speed'));
+                                if (savedSpeed && !isNaN(savedSpeed) && dp.video) {
+                                    if (Math.abs(dp.video.playbackRate - savedSpeed) > 0.01) {
+                                        dp.speed(savedSpeed);
+                                        console.log('[倍速恢复] 切换视频后恢复倍速:', savedSpeed + 'x');
+                                    }
+                                }
+                            } catch (e) { }
+
                             if (progressRestored) {
                                 console.log('[进度记忆-切换] 已恢复过，跳过');
                                 return;
@@ -6410,6 +6421,20 @@
 
                         dp.on('canplay', restoreHandler);
                         console.log('[进度记忆-切换] canplay 监听器已添加');
+
+                        // 💾 重新绑定 ratechange 监听器（switchVideo 后 video 元素会更新）
+                        // 使用 DPlayer 的事件而非直接监听 video，确保兼容性
+                        setTimeout(() => {
+                            if (dp.video) {
+                                dp.video.addEventListener('ratechange', () => {
+                                    const speed = dp.video.playbackRate;
+                                    try {
+                                        localStorage.setItem('dplayer_speed', speed);
+                                        console.log('[倍速保存] 切换后保存倍速:', speed + 'x');
+                                    } catch (e) { }
+                                });
+                            }
+                        }, 100);
                     }
                     dp.play();
 

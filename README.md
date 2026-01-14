@@ -57,9 +57,9 @@ https://ednovas-test.vercel.app （不包含任何数据）
 - **一键安装脚本**：支持交互式配置 API Key、反代地址、运行端口。
 
 ### 5. 📱 多端支持
-- **Android TV / 盒子**：提供专属 APK 安装包，完美适配电视遥控器操作，支持 Android TV 桌面启动 (Leanback Launcher)。
-- **移动端 App**：基于现代 Web 技术封装，支持**沉浸式状态栏 (Immersive Status Bar)**，顶部无黑边，内容自动适配刘海屏，体验原生级流畅。
+- **Android App**：基于现代 Web 技术封装，支持**沉浸式状态栏 (Immersive Status Bar)**，顶部无黑边，内容自动适配刘海屏，体验原生级流畅。
 - **PWA 支持**：支持添加到主屏幕，即点即用。
+- **电视/盒子**：推荐使用电视浏览器（如当贝浏览器）直接访问网页版，兼容性最佳。
 
 ### 6. 🔒 安全与访问控制
 - **全局访问密码**：支持设置全局访问密码，且支持**记住登录状态长达 1 年**，既安全又便捷。
@@ -706,7 +706,7 @@ docker run -d -p 3000:3000 \
     ```
 3.  **下载 APK**：
     构建完成后，在 GitHub 仓库的 **"Releases"** 页面即可下载生成的 `.apk` 安装包。
-    *此 APK 包含完整的电视端 (Android TV) 适配、沉浸式状态栏支持及自动优化的应用图标。*
+    *此 APK 包含沉浸式状态栏支持及自动优化的应用图标。*
 
 #### 📱 构建特性
 - **自动图标优化**：GitHub Actions 会自动调整图标尺寸并添加安全边距，防止在圆形图标遮罩下被裁剪。
@@ -740,12 +740,11 @@ docker run -d -p 3000:3000 \
 
 ##### 📱 配置文件位置
 
-| 版本 | 配置文件路径 | App ID |
-|-----|-------------|--------|
-| **手机版** | `capacitor.config.json` | `com.ednovas.donguatv` |
-| **电视版** | `android-tv/capacitor.config.json` | `com.ednovas.donguatv.tv` |
+| 配置文件路径 | App ID |
+|-------------|--------|
+| `capacitor.config.json` | `com.ednovas.donguatv` |
 
-两个版本的配置格式相同，只需修改 `server.url` 即可更改内置网站地址：
+只需修改 `server.url` 即可更改内置网站地址：
 
 1.  编辑对应的 `capacitor.config.json`，修改 `server.url` 为您的服务器地址：
     ```json
